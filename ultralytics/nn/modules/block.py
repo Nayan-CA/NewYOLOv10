@@ -832,7 +832,7 @@ class SCDown(nn.Module):
 
 class DPAM(nn.Module):
     """Dual Path Attention Module (DPAM)"""
-    def __init__(self, channels: int):
+    def __init__(self, channels: int, *args):
         super().__init__()
         self.conv1 = nn.Conv2d(channels, channels, kernel_size=3, padding=1, bias=False)
         self.act1 = nn.SiLU()  # SiLU (Swish activation)
@@ -860,7 +860,7 @@ class DPAM(nn.Module):
 
 class DALSM(nn.Module):
     """DALSM Module with Integrated Convolution Blocks"""
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels, out_channels, *args):
         super().__init__()
         
         def conv_block(in_c, out_c, kernel_size, stride=1, padding=0, activation='SiLU'):
