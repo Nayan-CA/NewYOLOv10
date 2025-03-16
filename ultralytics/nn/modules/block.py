@@ -38,6 +38,8 @@ __all__ = (
     "CBFuse",
     "CBLinear",
     "Silence",
+    "DPAM",
+    "DALSM",
 )
 
 
@@ -825,3 +827,70 @@ class SCDown(nn.Module):
 
     def forward(self, x):
         return self.cv2(self.cv1(x))
+
+
+
+class DPAM(nn.Module):
+    """Dual Path Attention Module (DPAM)"""
+    def __init__(self, channels: int):
+        super().__init__()
+        self.conv1 = nn.Conv2d(channels, channels, kernel_size=3, padding=1, bias=False)
+        self.act1 = nn.SiLU()  # SiLU (Swish activation)
+        self.spatial_attn = SpatialAttention(kernel_size=7)  # PAM
+        self.conv2 = nn.Conv2d(channels, channels, kernel_size=3, padding=1, bias=False)
+        self.channel_attn = ChannelAttention(channels)  # CAM
+        self.concat = lambda x1, x2: torch.cat((x1, x2), dim=1)  # Concat along channel dimension
+        self.conv3 = nn.Conv2d(channels * 2, channels, kernel_size=3, padding=1, bias=False)
+        self.psa = PSA(channels, channels)  # PSA for final attention refinement
+
+    def forward(self, x):
+        x1 = self.act1(self.conv1(x))  # Conv1 -> SiLU
+        x1 = self.spatial_attn(x1)  # PAM
+        x2 = self.conv2(x1)  # Conv2
+        x2 = self.channel_attn(x2)  # CAM
+        x_cat = self.concat(x1, x2)  # Concat
+        x_out = self.conv3(x_cat)  # Conv3
+        return self.psa(x_out)  # PSA + Compute Attention Weights
+    
+
+
+
+
+
+
+class DALSM(nn.Module):
+    """DALSM Module with Integrated Convolution Blocks"""
+    def __init__(self, in_channels, out_channels):
+        super().__init__()
+        
+        def conv_block(in_c, out_c, kernel_size, stride=1, padding=0, activation='SiLU'):
+            """Reusable Convolution Block"""
+            layers = [
+                nn.Conv2d(in_c, out_c, kernel_size, stride, padding, bias=False),
+                nn.BatchNorm2d(out_c)
+            ]
+            if activation == 'SiLU':
+                layers.append(nn.SiLU())
+            elif activation == 'Mish':
+                layers.append(nn.Mish())
+            return nn.Sequential(*layers)
+        
+        self.conv1 = conv_block(in_channels, out_channels, kernel_size=3, stride=1, padding=1, activation='SiLU')
+        self.conv2 = conv_block(out_channels, out_channels, kernel_size=3, stride=1, padding=1, activation='Mish')
+        self.conv3 = conv_block(out_channels, out_channels, kernel_size=3, stride=1, padding=1, activation='SiLU')
+
+    def forward(self, x):
+        """Apply sequential convolutional layers and compute attention-based matching."""
+        x = self.conv1(x)
+        x = self.conv2(x)
+        x = self.conv3(x)
+        
+        # Simulated steps for matching (placeholders)
+        one_one_matching = x.mean(dim=(2, 3), keepdim=True)  # Global Avg Pooling
+        one_many_matching = torch.max(x, dim=1, keepdim=True)[0]  # Channel-wise max
+        consistent_matching = one_one_matching + one_many_matching  # Element-wise addition
+        
+        # NMS-Free Inference: Placeholder step
+        nms_free_output = F.softmax(consistent_matching, dim=1)
+        
+        return nms_free_output
