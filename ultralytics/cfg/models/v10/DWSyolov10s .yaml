@@ -18,19 +18,34 @@ scales:  # model compound scaling constants
 #   - [-1, 1, SPPF, [1024, 5]]  # 9
 #   - [-1, 1, DPAM, [1024]]  # 10
 
+# backbone:
+#   # [from, repeats, module, args]
+#   - [-1, 1, DWSConv, [64, 3, 2]]      # 0-P1/2
+#   - [-1, 1, DWSConv, [128, 3, 2]]     # 1-P2/4
+#   - [-1, 3, C2f, [128, True]]
+#   - [-1, 1, DWSConv, [256, 3, 2]]     # 3-P3/8
+#   - [-1, 6, C2f, [256, True]]
+#   - [-1, 1, SCDown, [512, 3, 2]]     # 5-P4/16 (SCDown already depthwise-style)
+#   - [-1, 6, C2f, [512, True]]
+#   - [-1, 1, SCDown, [1024, 3, 2]]    # 7-P5/32
+#   - [-1, 3, C2fCIB, [1024, True, True]]
+#   - [-1, 1, SPPF, [1024, 5]]         # 9
+#   - [-1, 1, DPAM, [1024]]            # 10
+
 backbone:
   # [from, repeats, module, args]
-  - [-1, 1, DWSConv, [64, 3, 2]]      # 0-P1/2
-  - [-1, 1, DWSConv, [128, 3, 2]]     # 1-P2/4
-  - [-1, 3, C2f, [128, True]]
-  - [-1, 1, DWSConv, [256, 3, 2]]     # 3-P3/8
-  - [-1, 6, C2f, [256, True]]
-  - [-1, 1, SCDown, [512, 3, 2]]     # 5-P4/16 (SCDown already depthwise-style)
-  - [-1, 6, C2f, [512, True]]
-  - [-1, 1, SCDown, [1024, 3, 2]]    # 7-P5/32
-  - [-1, 3, C2fCIB, [1024, True, True]]
-  - [-1, 1, SPPF, [1024, 5]]         # 9
-  - [-1, 1, DPAM, [1024]]            # 10
+  - [-1, 1, DWConv, [3, 64, 3, 2]]        # 0 - Input: 3 channels → 64
+  - [-1, 1, DWConv, [64, 128, 3, 2]]      # 1 - 64 → 128
+  - [-1, 3, C2f, [128, True]]             # 2
+  - [-1, 1, DWConv, [128, 256, 3, 2]]     # 3 - 128 → 256
+  - [-1, 6, C2f, [256, True]]             # 4
+  - [-1, 1, SCDown, [512, 3, 2]]          # 5 - no change (SCDown likely uses DW internally)
+  - [-1, 6, C2f, [512, True]]             # 6
+  - [-1, 1, SCDown, [1024, 3, 2]]         # 7
+  - [-1, 3, C2fCIB, [1024, True, True]]   # 8
+  - [-1, 1, SPPF, [1024, 5]]              # 9
+  - [-1, 1, DPAM, [1024]]                 # 10
+
 
 
 # YOLOv10 Head
