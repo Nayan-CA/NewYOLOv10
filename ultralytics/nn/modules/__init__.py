@@ -67,6 +67,7 @@ from .conv import (
     LightConv,
     RepConv,
     SpatialAttention,
+    DWSConv,
 )
 from .head import OBB, Classify, Detect, Pose, RTDETRDecoder, Segment, WorldDetect, v10Detect
 from .transformer import (
@@ -147,5 +148,6 @@ __all__ = (
     "RepVGGDW",
     "v10Detect",
     "DPAM",
-    "DALSM"
+    "DALSM",
+    "DWSConv",
 )
