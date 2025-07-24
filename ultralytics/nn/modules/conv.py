@@ -364,9 +364,5 @@ class DWSConv(nn.Module):
         x = self.pw_bn(self.pwconv(x))
         return self.act(x)
 
-    def forward_fuse(self, x):
-        # If batch norm is fused, use this
-        x = self.dwconv(x)
-        x = self.pwconv(x)
-        return self.act(x)
+    
 
