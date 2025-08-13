@@ -374,7 +374,7 @@ class DWSConv(nn.Module):
         self.dw_bn = nn.BatchNorm2d(c1)
         self.pwconv = nn.Conv2d(c1, c2, 1, 1, 0, bias=False)
         self.pw_bn = nn.BatchNorm2d(c2)
-        self.act = default_act if act is True else act if isinstance(act, nn.Module) else nn.Identity()
+        self.act = self.default_act if act is True else act if isinstance(act, nn.Module) else nn.Identity()
 
     def forward(self, x):
         x = self.dw_bn(self.dwconv(x))
