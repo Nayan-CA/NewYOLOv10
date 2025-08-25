@@ -335,50 +335,29 @@ class Concat(nn.Module):
 
 
 class DWSConv(nn.Module):
-    """Depthwise Separable Convolution block (YOLO-style).
-    Args:
-        c1: input channels
-        c2: output channels
-        k: kernel size
-        s: stride
-        p: padding
-        d: dilation
-        act: activation (default SiLU)
-    """
+    """Depthwise Separable Convolution (Depthwise + Pointwise)."""
 
     default_act = nn.SiLU()
 
-    # def __init__(self, c1, c2, k=1, s=1, p=None, d=1, act=True):
-    #     super().__init__()
-    #     # Depthwise conv
-    #     self.dwconv = nn.Conv2d(c1, c1, k, s, autopad(k, p, d), groups=c1, dilation=d, bias=False)
-    #     self.dw_bn = nn.BatchNorm2d(c1)
-    #     # Pointwise conv
-    #     self.pwconv = nn.Conv2d(c1, c2, 1, 1, 0, bias=False)
-    #     self.pw_bn = nn.BatchNorm2d(c2)
-    #     # Activation
-    #     self.act = self.default_act if act is True else act if isinstance(act, nn.Module) else nn.Identity()
-
-    # def forward(self, x):
-    #     x = self.dw_bn(self.dwconv(x))
-    #     x = self.pw_bn(self.pwconv(x))
-    #     return self.act(x)
-
-
-
-
-
-    def __init__(self, c1, c2, k=1, s=1, p=None, d=1, act=True):
+    def __init__(self, c1, c2, k=3, s=1, p=None, d=1, act=True):
         super().__init__()
+        # Depthwise convolution
         self.dwconv = nn.Conv2d(c1, c1, k, s, autopad(k, p, d), groups=c1, dilation=d, bias=False)
         self.dw_bn = nn.BatchNorm2d(c1)
+
+        # Pointwise convolution (1×1 conv to mix channels)
         self.pwconv = nn.Conv2d(c1, c2, 1, 1, 0, bias=False)
         self.pw_bn = nn.BatchNorm2d(c2)
+
+        # Activation
         self.act = self.default_act if act is True else act if isinstance(act, nn.Module) else nn.Identity()
 
     def forward(self, x):
+        # Depthwise conv
         x = self.dw_bn(self.dwconv(x))
+        # Pointwise conv
         x = self.pw_bn(self.pwconv(x))
+        # Activation
         return self.act(x)
 
 
