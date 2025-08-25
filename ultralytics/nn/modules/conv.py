@@ -339,7 +339,7 @@ class DWSConv(nn.Module):
 
     default_act = nn.SiLU()
 
-    def __init__(self, c1, c2, k=3, s=1, p=None, d=1, act=True):
+    def __init__(self, c1, c2, k=1, s=1, p=None, d=1, act=True):
         super().__init__()
         # Depthwise convolution
         self.dwconv = nn.Conv2d(c1, c1, k, s, autopad(k, p, d), groups=c1, dilation=d, bias=False)
