@@ -296,8 +296,8 @@ class SpatialAttention(nn.Module):
 
     def __init__(self, kernel_size=7,*args):
         """Initialize Spatial-attention module with kernel size argument."""
-        print(f"Kernel size in SpatialAttention {kernel_size}")
         super().__init__()
+        print(f"Kernel size in SpatialAttention {kernel_size}")
         assert kernel_size in (3, 7), "kernel size must be 3 or 7"
         padding = 3 if kernel_size == 7 else 1
         self.cv1 = nn.Conv2d(2, 1, kernel_size, padding=padding, bias=False)
@@ -313,9 +313,8 @@ class CBAM(nn.Module):
 
     def __init__(self, c1, kernel_size=7, *args):
         """Initialize CBAM with given input channel (c1) and kernel size."""
-        print(f"Kernel size in CBAM {kernel_size}")
-        
         super().__init__()
+        print(f"Kernel size in CBAM {kernel_size}")
         self.channel_attention = ChannelAttention(c1)
         self.spatial_attention = SpatialAttention(kernel_size)
 
