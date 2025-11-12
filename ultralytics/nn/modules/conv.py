@@ -310,7 +310,7 @@ class SpatialAttention(nn.Module):
 class CBAM(nn.Module):
     """Convolutional Block Attention Module."""
 
-    def __init__(self, c1, kernel_size=7):
+    def __init__(self, c1, kernel_size=7, *args):
         """Initialize CBAM with given input channel (c1) and kernel size."""
         super().__init__()
         self.channel_attention = ChannelAttention(c1)
