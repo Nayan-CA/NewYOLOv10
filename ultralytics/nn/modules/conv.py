@@ -279,7 +279,7 @@ class RepConv(nn.Module):
 class ChannelAttention(nn.Module):
     """Channel-attention module https://github.com/open-mmlab/mmdetection/tree/v3.0.0rc1/configs/rtmdet."""
 
-    def __init__(self, channels: int) -> None:
+    def __init__(self, channels: int,*args) -> None:
         """Initializes the class and sets the basic configurations and instance variables required."""
         super().__init__()
         self.pool = nn.AdaptiveAvgPool2d(1)
@@ -294,7 +294,7 @@ class ChannelAttention(nn.Module):
 class SpatialAttention(nn.Module):
     """Spatial-attention module."""
 
-    def __init__(self, kernel_size=7):
+    def __init__(self, kernel_size=7,*args):
         """Initialize Spatial-attention module with kernel size argument."""
         super().__init__()
         assert kernel_size in (3, 7), "kernel size must be 3 or 7"
